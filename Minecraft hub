@@ -1,8 +1,4 @@
--- Brookhaven Multi-Tool Script
--- Autor: arthur199-eng
--- Para uso educacional/apenas estudos!
-
---local ScreenGui = Instance.new("ScreenGui")
+local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BrookhavenToolGui"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
@@ -292,5 +288,3 @@ credits.TextColor3 = Color3.fromRGB(180,180,180)
 credits.Font = Enum.Font.SourceSansItalic
 credits.TextScaled = true
 credits.Parent = mainFrame
-
--- FIM DO SCRIPT
