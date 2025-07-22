@@ -1,0 +1,296 @@
+-- Brookhaven Multi-Tool Script
+-- Autor: arthur199-eng
+-- Para uso educacional/apenas estudos!
+
+--local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "BrookhavenToolGui"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0,400,0,450)
+mainFrame.Position = UDim2.new(0.5,-200,0.5,-225)
+mainFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+mainFrame.Parent = ScreenGui
+
+local title = Instance.new("TextLabel")
+title.Text = "Brookhaven Multi-Tool"
+title.Size = UDim2.new(1,0,0,40)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.SourceSansBold
+title.TextScaled = true
+title.Parent = mainFrame
+
+-- Utility function to create buttons
+local function createButton(txt, y, callback)
+    local btn = Instance.new("TextButton")
+    btn.Text = txt
+    btn.Size = UDim2.new(0.95,0,0,35)
+    btn.Position = UDim2.new(0.025,0,0,y)
+    btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.SourceSans
+    btn.TextScaled = true
+    btn.Parent = mainFrame
+    btn.MouseButton1Click:Connect(callback)
+end
+
+-- List of players function
+local function getPlayers()
+    local list = {}
+    for i,plr in pairs(game.Players:GetPlayers()) do
+        if plr ~= game.Players.LocalPlayer then
+            table.insert(list, plr.Name)
+        end
+    end
+    return list
+end
+
+-- Simple player picker dialog
+local function pickPlayer(callback)
+    local pickFrame = Instance.new("Frame")
+    pickFrame.Size = UDim2.new(0,300,0,250)
+    pickFrame.Position = UDim2.new(0.5,-150,0.5,-125)
+    pickFrame.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    pickFrame.Parent = ScreenGui
+
+    local pickTitle = Instance.new("TextLabel")
+    pickTitle.Text = "Escolha um jogador"
+    pickTitle.Size = UDim2.new(1,0,0,30)
+    pickTitle.BackgroundTransparency = 1
+    pickTitle.TextColor3 = Color3.fromRGB(255,255,255)
+    pickTitle.Font = Enum.Font.SourceSansBold
+    pickTitle.TextScaled = true
+    pickTitle.Parent = pickFrame
+
+    local players = getPlayers()
+    for idx, name in ipairs(players) do
+        local pbtn = Instance.new("TextButton")
+        pbtn.Text = name
+        pbtn.Size = UDim2.new(0.9,0,0,30)
+        pbtn.Position = UDim2.new(0.05,0,0,30+35*(idx-1))
+        pbtn.BackgroundColor3 = Color3.fromRGB(80,80,80)
+        pbtn.TextColor3 = Color3.fromRGB(255,255,255)
+        pbtn.Font = Enum.Font.SourceSans
+        pbtn.TextScaled = true
+        pbtn.Parent = pickFrame
+        pbtn.MouseButton1Click:Connect(function()
+            pickFrame:Destroy()
+            callback(name)
+        end)
+    end
+end
+
+-- 1. Copiar skin dos jogadores
+createButton("Copiar Skin de Jogador", 50, function()
+    pickPlayer(function(otherName)
+        local other = game.Players:FindFirstChild(otherName)
+        if other and other.Character and game.Players.LocalPlayer.Character then
+            -- Copia a aparência (não funciona em todos os jogos)
+            local desc = other.Character:FindFirstChildOfClass("Humanoid"):GetAppliedDescription()
+            game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ApplyDescription(desc)
+        end
+    end)
+end)
+
+-- 2. Trollar jogadores
+createButton("Trollar Jogador (Kill, Fling, etc)", 95, function()
+    pickPlayer(function(otherName)
+        local trollFrame = Instance.new("Frame")
+        trollFrame.Size = UDim2.new(0,220,0,140)
+        trollFrame.Position = UDim2.new(0.5,-110,0.5,-70)
+        trollFrame.BackgroundColor3 = Color3.fromRGB(60,60,60)
+        trollFrame.Parent = ScreenGui
+
+        local tkill = Instance.new("TextButton")
+        tkill.Text = "Kill"
+        tkill.Size = UDim2.new(0.9,0,0,30)
+        tkill.Position = UDim2.new(0.05,0,0,10)
+        tkill.Parent = trollFrame
+        tkill.MouseButton1Click:Connect(function()
+            local other = game.Players:FindFirstChild(otherName)
+            if other and other.Character then
+                other.Character:FindFirstChildOfClass("Humanoid").Health = 0
+            end
+            trollFrame:Destroy()
+        end)
+
+        local tfling = Instance.new("TextButton")
+        tfling.Text = "Fling"
+        tfling.Size = UDim2.new(0.9,0,0,30)
+        tfling.Position = UDim2.new(0.05,0,0,50)
+        tfling.Parent = trollFrame
+        tfling.MouseButton1Click:Connect(function()
+            local other = game.Players:FindFirstChild(otherName)
+            if other and other.Character and other.Character:FindFirstChild("HumanoidRootPart") then
+                other.Character.HumanoidRootPart.Velocity = Vector3.new(0,500,0)
+            end
+            trollFrame:Destroy()
+        end)
+
+        local close = Instance.new("TextButton")
+        close.Text = "Fechar"
+        close.Size = UDim2.new(0.9,0,0,30)
+        close.Position = UDim2.new(0.05,0,0,90)
+        close.Parent = trollFrame
+        close.MouseButton1Click:Connect(function()
+            trollFrame:Destroy()
+        end)
+    end)
+end)
+
+-- 3. Executar outros scripts
+createButton("Executar Scripts (Infinite Yield, Coquette Hub)", 140, function()
+    local scriptFrame = Instance.new("Frame")
+    scriptFrame.Size = UDim2.new(0,250,0,120)
+    scriptFrame.Position = UDim2.new(0.5,-125,0.5,-60)
+    scriptFrame.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    scriptFrame.Parent = ScreenGui
+
+    local iyBtn = Instance.new("TextButton")
+    iyBtn.Text = "Infinite Yield"
+    iyBtn.Size = UDim2.new(0.9,0,0,30)
+    iyBtn.Position = UDim2.new(0.05,0,0,10)
+    iyBtn.Parent = scriptFrame
+    iyBtn.MouseButton1Click:Connect(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        scriptFrame:Destroy()
+    end)
+
+    local coquetteBtn = Instance.new("TextButton")
+    coquetteBtn.Text = "Coquette Hub"
+    coquetteBtn.Size = UDim2.new(0.9,0,0,30)
+    coquetteBtn.Position = UDim2.new(0.05,0,0,50)
+    coquetteBtn.Parent = scriptFrame
+    coquetteBtn.MouseButton1Click:Connect(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/coquettehub/coquette/main/main.lua"))()
+        scriptFrame:Destroy()
+    end)
+
+    local close = Instance.new("TextButton")
+    close.Text = "Fechar"
+    close.Size = UDim2.new(0.9,0,0,30)
+    close.Position = UDim2.new(0.05,0,0,90)
+    close.Parent = scriptFrame
+    close.MouseButton1Click:Connect(function()
+        scriptFrame:Destroy()
+    end)
+end)
+
+-- 4. Teletransportar para lugares do mapa
+local teleports = {
+    ["Fazenda"] = Vector3.new(100, 3, 800),
+    ["Praça"] = Vector3.new(-50, 3, 200),
+    ["Ponte"] = Vector3.new(300, 3, -400),
+    ["Banco"] = Vector3.new(50, 3, -200),
+    ["Hospital"] = Vector3.new(-350, 3, 100),
+}
+createButton("Teletransportar para Lugares", 185, function()
+    local tpFrame = Instance.new("Frame")
+    tpFrame.Size = UDim2.new(0,260,0,30+35*#teleports)
+    tpFrame.Position = UDim2.new(0.5,-130,0.5,-15-35*#teleports/2)
+    tpFrame.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    tpFrame.Parent = ScreenGui
+
+    local i = 0
+    for name, pos in pairs(teleports) do
+        i = i + 1
+        local btn = Instance.new("TextButton")
+        btn.Text = name
+        btn.Size = UDim2.new(0.9,0,0,30)
+        btn.Position = UDim2.new(0.05,0,0,5+35*(i-1))
+        btn.Parent = tpFrame
+        btn.MouseButton1Click:Connect(function()
+            local chr = game.Players.LocalPlayer.Character
+            if chr and chr:FindFirstChild("HumanoidRootPart") then
+                chr.HumanoidRootPart.CFrame = CFrame.new(pos)
+            end
+            tpFrame:Destroy()
+        end)
+    end
+end)
+
+-- 5. Opções de veículos
+createButton("Opções de Veículo", 230, function()
+    local vFrame = Instance.new("Frame")
+    vFrame.Size = UDim2.new(0,250,0,185)
+    vFrame.Position = UDim2.new(0.5,-125,0.5,-92)
+    vFrame.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    vFrame.Parent = ScreenGui
+
+    local musicBtn = Instance.new("TextButton")
+    musicBtn.Text = "Colocar música no carro"
+    musicBtn.Size = UDim2.new(0.9,0,0,30)
+    musicBtn.Position = UDim2.new(0.05,0,0,10)
+    musicBtn.Parent = vFrame
+    musicBtn.MouseButton1Click:Connect(function()
+        -- Exemplo: Coloca música em todos os veículos do jogador
+        local chr = game.Players.LocalPlayer.Character
+        for _,v in pairs(workspace:GetChildren()) do
+            if v:IsA("Model") and v:FindFirstChild("Seat") and v:FindFirstChild("Music") then
+                v.Music.SoundId = "rbxassetid://1842739886" -- Mude o ID
+                v.Music:Play()
+            end
+        end
+    end)
+
+    local speedBtn = Instance.new("TextButton")
+    speedBtn.Text = "Mudar velocidade do veículo"
+    speedBtn.Size = UDim2.new(0.9,0,0,30)
+    speedBtn.Position = UDim2.new(0.05,0,0,50)
+    speedBtn.Parent = vFrame
+    speedBtn.MouseButton1Click:Connect(function()
+        for _,v in pairs(workspace:GetChildren()) do
+            if v:IsA("Model") and v:FindFirstChild("Seat") and v:FindFirstChild("Engine") then
+                v.Engine.MaxSpeed = 150 -- Alterar valor desejado
+            end
+        end
+    end)
+
+    local puxarBtn = Instance.new("TextButton")
+    puxarBtn.Text = "Puxar veículos (aproximar)"
+    puxarBtn.Size = UDim2.new(0.9,0,0,30)
+    puxarBtn.Position = UDim2.new(0.05,0,0,90)
+    puxarBtn.Parent = vFrame
+    puxarBtn.MouseButton1Click:Connect(function()
+        local chr = game.Players.LocalPlayer.Character
+        for _,v in pairs(workspace:GetChildren()) do
+            if v:IsA("Model") and v:FindFirstChild("Seat") then
+                v:MoveTo(chr.HumanoidRootPart.Position + Vector3.new(math.random(-5,5),0,math.random(-5,5)))
+            end
+        end
+    end)
+
+    local close = Instance.new("TextButton")
+    close.Text = "Fechar"
+    close.Size = UDim2.new(0.9,0,0,30)
+    close.Position = UDim2.new(0.05,0,0,130)
+    close.Parent = vFrame
+    close.MouseButton1Click:Connect(function()
+        vFrame:Destroy()
+    end)
+end)
+
+-- 6. Pegar permissão de casas (Exemplo simples)
+createButton("Pegar Permissão de Casas", 275, function()
+    for _,v in pairs(workspace:GetChildren()) do
+        if v.Name:find("House") and v:FindFirstChild("Door") then
+            if v.Door:FindFirstChild("Permissions") then
+                v.Door.Permissions.Value = game.Players.LocalPlayer.Name
+            end
+        end
+    end
+end)
+
+-- Creditos
+local credits = Instance.new("TextLabel")
+credits.Text = "Feito por arthur199-eng | Apenas para estudo"
+credits.Size = UDim2.new(1,0,0,30)
+credits.Position = UDim2.new(0,0,1,-30)
+credits.BackgroundTransparency = 1
+credits.TextColor3 = Color3.fromRGB(180,180,180)
+credits.Font = Enum.Font.SourceSansItalic
+credits.TextScaled = true
+credits.Parent = mainFrame
+
+-- FIM DO SCRIPT
